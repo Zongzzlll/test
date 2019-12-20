@@ -1,3 +1,5 @@
+# coding=UTF-8
+
 import tensorflow as tf
 import numpy as np
 import glob
@@ -7,9 +9,10 @@ import shutil
 
 
 # 模型目录
-CHECKPOINT_DIR = './runs/1569748442/checkpoints/'
+files="1576732090"
+CHECKPOINT_DIR = './runs/'+files+'/checkpoints/'
 INCEPTION_MODEL_FILE = 'inception/classify_image_graph_def.pb'
-path = "./test" 
+path = "./images_analysis_all" 
 imagelist = os.listdir(path)
 correct=0
 filelist = os.listdir(path)  # 打开对应的文件夹
@@ -26,8 +29,8 @@ JPEG_DATA_TENSOR_NAME = 'DecodeJpeg/contents:0'  # 图像输入张量对应的�
 # file_path = './data/flower_photos/sunflowers/6953297_8576bf4ea3.jpg'
 # file_path = './data/flower_photos/sunflowers/40410814_fba3837226_n.jpg'
 # file_path = './data/flower_photos/tulips/11746367_d23a35b085_n.jpg'
-y_test = ['rose','tulip','daisy','sunflower','dandelion']
-
+y_test = ["Iris","Colts'Foot","Daffodil","Fritillary","Sunflower","Dandelion","Buttercup","Crocus","Pansy","Tulip","Bluebell","Cowslip","Windflower","Daisy","Tigerlily","LilyValley","Snowdrop"]
+y_test_2 = ["Sunflower","Dandelion","Fritillary","Buttercup","Pansy","Crocus","Tigerlily","Snowdrop","Colts'Foot","LilyValley","Bluebell","Tulip","Daisy","Cowslip","Windflower","Daffodil","Iris"]
 # 读取数据
 #image_data = tf.gfile.GFile(file_path, 'rb').read()
 
@@ -35,7 +38,7 @@ y_test = ['rose','tulip','daisy','sunflower','dandelion']
 for imgname in imagelist:
     if(imgname.endswith(".jpg")):
        image_data = tf.gfile.FastGFile(os.path.join(path, imgname), 'rb').read()
-       print(imgname)
+       # print(imgname)
        checkpoint_file = tf.train.latest_checkpoint(CHECKPOINT_DIR)
        with tf.Graph().as_default() as graph:
            with tf.Session().as_default() as sess:
@@ -71,10 +74,13 @@ for imgname in imagelist:
                   all_predictions = []
                   all_predictions = sess.run(predictions, {input_x: bottleneck_values})
                   a=all_predictions[0]
-                  if(y_test[a]==imgname.split('_')[0]):
+                  print(imgname)
+                  print(y_test_2[a])
+                  if(y_test_2[a]==imgname.split('_')[0]):
                        correct+=1
                   #print(sum(all_predictions == y_test))
 print("Correct number is: " + str(correct))
 print("Wrong number is: " + str(total_num-correct))
+# cout << correct/total_num*100.0 <<endl
 print("The accuracy rate of the test is: {:.2f}%".format(correct/total_num*100))
 

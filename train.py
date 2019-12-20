@@ -1,3 +1,5 @@
+# coding=UTF-8
+
 import glob
 import os.path
 import random
@@ -5,12 +7,12 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.python.platform import gfile
 
-# 数据参数
+
 MODEL_DIR = 'inception/'  # inception-v3模型的文件夹
 MODEL_FILE = 'classify_image_graph_def.pb'  # inception-v3模型文件名
 CACHE_DIR = 'bottlenecks'  # 图像的特征向量保存地址
 INPUT_DATA = 'flower_photos'  # 图片数据文件夹
-VALIDATION_PERCENTAGE = 5  # 验证数据的百分比
+VALIDATION_PERCENTAGE = 5# 验证数据的百分比
 TEST_PERCENTAGE = 0  # 测试数据的百分比
 
 # inception-v3模型参数
@@ -22,7 +24,6 @@ JPEG_DATA_TENSOR_NAME = 'DecodeJpeg/contents:0'  # 图像输入张量对应的�
 LEARNING_RATE = 0.02
 STEPS = 10000
 BATCH = 32
-CHECKPOINT_EVERY = 100
 NUM_CHECKPOINTS = 5
 
 
@@ -257,7 +258,7 @@ def main(_):
             saver = tf.train.Saver(
                 tf.global_variables(), max_to_keep=NUM_CHECKPOINTS)
 
-        for i in range(STEPS):
+        for i in range(STEPS+1):
             # 每次获取一个batch的训练数据
             train_bottlenecks, train_ground_truth = get_random_cached_bottlenecks(
                 sess, n_classes, image_lists, BATCH, 'training',
@@ -288,10 +289,11 @@ def main(_):
                     % (i, BATCH, validation_accuracy * 100))
 
             # 每隔checkpoint_every保存一次模型和测试摘要
-            if i % CHECKPOINT_EVERY == 0:
-                dev_summary_writer.add_summary(dev_summaries, i)
-                path = saver.save(sess, checkpoint_prefix, global_step=i)
-                print('Saved model checkpoint to {}\n'.format(path))
+            if i!=0:
+                if i % 1000== 0:
+                    dev_summary_writer.add_summary(dev_summaries, i)
+                    path = saver.save(sess, checkpoint_prefix, global_step=i)
+                    print('Saved model checkpoint to {}\n'.format(path))
 
         # 最后在测试集上测试正确率
         # test_bottlenecks, test_ground_truth = get_test_bottlenecks(

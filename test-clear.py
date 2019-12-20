@@ -1,3 +1,5 @@
+# coding=UTF-8
+
 import tensorflow as tf
 import numpy as np
 import glob
@@ -7,7 +9,8 @@ import shutil
 
 
 # 模型目录
-CHECKPOINT_DIR = './runs/1576313317/checkpoints/'
+files="1576466041"
+CHECKPOINT_DIR = './runs/'+files+'/checkpoints/'
 INCEPTION_MODEL_FILE = 'inception/classify_image_graph_def.pb'
 path = "./images_analysis_clear" 
 imagelist = os.listdir(path)
@@ -35,7 +38,6 @@ y_test = ["Sunflower","Dandelion","Fritillary","Buttercup","Pansy","Crocus","Tig
 for imgname in imagelist:
     if(imgname.endswith(".jpg")):
        image_data = tf.gfile.FastGFile(os.path.join(path, imgname), 'rb').read()
-       print(imgname)
        checkpoint_file = tf.train.latest_checkpoint(CHECKPOINT_DIR)
        with tf.Graph().as_default() as graph:
            with tf.Session().as_default() as sess:
@@ -71,6 +73,8 @@ for imgname in imagelist:
                   all_predictions = []
                   all_predictions = sess.run(predictions, {input_x: bottleneck_values})
                   a=all_predictions[0]
+                  print(imgname)
+                  print(y_test[a])
                   if(y_test[a]==imgname.split('_')[0]):
                        correct+=1
                   #print(sum(all_predictions == y_test))
